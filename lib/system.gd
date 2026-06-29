@@ -1,7 +1,7 @@
 extends Node
 var init: Node
 
-var root = OS.get_user_data_dir()+"/filesystem"
+var root: String = OS.get_user_data_dir()+"/filesystem"
 var root_name:= "hishell-root"
 var file_extensions: Dictionary[StringName, PackedStringArray] = {
 	"picture": ["png", "jpg", "jpeg", "svg", "avif", "webp"],
@@ -11,15 +11,15 @@ var file_extensions: Dictionary[StringName, PackedStringArray] = {
 var focused_window: BaseWindow = null
 var windows: Array[BaseWindow]
 
-func launch(path: String, position: Vector2 = Vector2.ZERO, parent: Node = root_window(), maximized:= false):
-	var type = Filesystem.get_file_type(path)
+func launch(path: String, position: Vector2 = Vector2.ZERO, parent: Node = root_window(), maximized:= false) -> void:
+	var type := Filesystem.get_file_type(path)
 	if type == "invalid":
 		System.dialog("Cannot open %s, no such file or directory."%[path], "Error")
 		return
 	if type == "unknown":
 		System.dialog("Cannot open %s, the file type is unknown."%[path], "Error")
 		return
-	var window = (preload("uid://0fthgyrf0xj8") as PackedScene).instantiate()
+	var window := (preload("uid://0fthgyrf0xj8") as PackedScene).instantiate()
 	window.location = path
 	window.origin = position
 	window.open_pos = position
@@ -65,7 +65,7 @@ func reboot(reinstall := false) -> void:
 	for i in windows:
 		i.queue_free()
 	windows.clear()
-	var boot = load("res://lib/Boot.tscn").instantiate()
+	var boot: Node = load("res://lib/Boot.tscn").instantiate()
 	boot.reinstall = reinstall
 	get_tree().root.add_child(boot)
 	

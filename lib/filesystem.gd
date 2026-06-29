@@ -23,7 +23,7 @@ static func get_file_type(location: String) -> String:
 	if is_folder(location):
 		return "folder"
 	elif is_file(location):
-		var extension = location.get_extension()
+		var extension: String = location.get_extension()
 		if extension.contains("/"):
 			return "unknown"
 		for i in System.file_extensions:

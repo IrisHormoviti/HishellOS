@@ -9,7 +9,7 @@ enum {
 var location: String
 var window: BaseWindow
 
-func draw_menu(for_location: String):
+func draw_menu(for_location: String) -> void:
 	location = for_location
 	var type := Filesystem.get_file_type(location)
 	if type == "invalid": return

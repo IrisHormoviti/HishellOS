@@ -3,9 +3,9 @@ class_name Thumbnail
 
 static func get_icon_for(path: String, theme: Control) -> Texture2D:
 	path = Filesystem.abs_path(path)
-	var is_folder = DirAccess.dir_exists_absolute(path)
+	var is_folder: bool = DirAccess.dir_exists_absolute(path)
 	if is_folder:
-		var custom_icon = Meta.get_cutsom_icon(path)
+		var custom_icon: String = Meta.get_cutsom_icon(path)
 		if not custom_icon.is_empty():
 			return await load_image(custom_icon)
 		else:

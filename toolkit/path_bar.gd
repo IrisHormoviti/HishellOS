@@ -22,7 +22,7 @@ func show_path(path: String):
 		for j in path_folders:
 			dir += j+"/"
 			if i == j: break
-		var text = Meta.folder_title(dir)
+		var text: String = Meta.folder_title(dir)
 		if i == path_folders[-1]:
 			dup.icon = await Thumbnail.get_icon_for(dir, self)
 		elif not Meta.get_cutsom_icon(dir).is_empty():
@@ -52,13 +52,13 @@ func _on_breadcrumb_pressed() -> void:
 		var new_location: String = ""
 		#if path_folders[0] != System.root_name:
 			#new_location += "/"
-		var count = node.get_index()
+		var count: int = node.get_index()
 		for i in path_folders:
 			new_location += i+"/"
 			count -= 1
 			if count == 0:
 				break
-		var prefix = Filesystem.path_prefix(window.location)
+		var prefix: String = Filesystem.path_prefix(window.location)
 		if not prefix.is_empty():
 			new_location = prefix + "://" + new_location
 		print(new_location)

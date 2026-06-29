@@ -2,7 +2,7 @@ extends Node
 class_name Animator
 
 static func set_tweened(property: StringName, value: Variant, node: Node, speed = 0.3) -> void:
-	var t = System.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	var t: Tween = System.create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	t.tween_property(node, NodePath(property), value, speed)
 	await t.finished
 

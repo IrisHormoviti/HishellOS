@@ -6,7 +6,7 @@
 [node name="ContextMenu" type="PopupMenu" unique_id=199873777]
 oversampling_override = 1.0
 title = "Context Menu"
-size = Vector2i(200, 319)
+size = Vector2i(220, 291)
 visible = true
 theme = ExtResource("1_fgy8p")
 item_count = 9

@@ -19,7 +19,7 @@ var splash_size := Vector2(200, 200)
 var components: Dictionary[String, Node]
 var parent: BaseWindow = null
 @export var animation_speed:= 0.3
-@export var draggable = true
+@export var draggable: bool = true
 var use_windows:= true
 var prev_size: Vector2 = Vector2(450, 300):
 	set(x):
@@ -34,7 +34,7 @@ var resizable:= 0
 var config: ConfigFile
 signal window_ready
 
-const resize_margin = 24
+const resize_margin: int = 24
 
 func _ready() -> void:
 	hide()
@@ -63,7 +63,7 @@ func _ready() -> void:
 	theme = ConfigManager.theme
 	set_tweened("modulate", Color.WHITE)
 	set_tweened("scale", Vector2.ONE)
-	var timer = get_tree().create_timer(animation_speed)
+	var timer: SceneTreeTimer = get_tree().create_timer(animation_speed)
 	if draggable:
 		drag_mouse_pos = size/2
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -143,7 +143,7 @@ func link_components(node: Node = self):
 			components.set(i.name, i)
 		link_components(i)
 
-func create_config(type: String):
+func create_config(type: String) -> void:
 	if not Filesystem.exists(ConfigManager.config_path.path_join("layouts/default.cfg")):
 		config = ConfigManager.get_fallback_config()
 		var error := await System.dialog(
@@ -158,11 +158,11 @@ func create_config(type: String):
 		close()
 		return
 	if not config.get_value("META", "IgnoreMeta", false):
-		var meta = Meta.get_folder_config(location)
+		var meta: ConfigFile = Meta.get_folder_config(location)
 		if meta != null:
 			ConfigManager.merge_config(meta, config)
 
-func create_content(type := Filesystem.get_file_type(location)):
+func create_content(type := Filesystem.get_file_type(location)) -> void:
 	if type == "unknown":
 		System.dialog("No handler for this filetype exists")
 		close()
@@ -175,7 +175,7 @@ func create_content(type := Filesystem.get_file_type(location)):
 	if config == null: 
 		return
 	for container in config.get_section_keys("LAYOUT"):
-		var container_node = get_node_or_null("%"+container)
+		var container_node: Node = get_node_or_null("%"+container)
 		if container_node != null:
 			var hbox: BoxContainer = container_node.get_child(0)
 			for i in hbox.get_children():
@@ -185,14 +185,14 @@ func create_content(type := Filesystem.get_file_type(location)):
 				if not value.ends_with(".tscn"): value += ".tscn"
 				var component: Control
 				if value.begins_with("./"):
-					var path = Filesystem.abs_path(value.replace("./", location))
+					var path: String = Filesystem.abs_path(value.replace("./", location))
 					if Filesystem.exists(path):
 						var packed := ResourceLoader.load(path, "PackedScene", ResourceLoader.CACHE_MODE_IGNORE) as PackedScene
 						component = packed.instantiate()
-						var script_path = path.replace(".tscn", ".gd")
+						var script_path: String = path.replace(".tscn", ".gd")
 						if Filesystem.is_file(script_path):
 							var script: Script = ResourceLoader.load(script_path, "Script", ResourceLoader.CACHE_MODE_IGNORE)
-							var error = script.reload()
+							var error: int = script.reload()
 							if error == Error.OK:
 								component.set_script(script)
 							else: System.dialog(error_string(error))
@@ -227,7 +227,7 @@ func _process(_delta: float) -> void:
 			pass
 		STATE_WINDOWED:
 			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT): return
-			var cursor_pos = get_viewport().get_mouse_position() - position
+			var cursor_pos: Vector2 = get_viewport().get_mouse_position() - position
 			if (
 				(cursor_pos.x > size.x - resize_margin and cursor_pos.x < size.x) 
 				and (cursor_pos.y > size.y - resize_margin and cursor_pos.y < size.y)
@@ -267,7 +267,7 @@ func _process(_delta: float) -> void:
 				state = STATE_WINDOWED
 				$Content.mouse_default_cursor_shape = CursorShape.CURSOR_ARROW
 
-func limit_pos(pos: Vector2, siz:Vector2 = size):
+func limit_pos(pos: Vector2, siz:Vector2 = size) -> Vector2:
 	var parent_pos := Vector2.ZERO
 	if parent != null:
 		parent_pos = parent.position
@@ -447,5 +447,5 @@ func focus_window():
 		parent.move_child(self, -1)
 
 func add_prefix(prefix: String) -> void:
-	var prev = Filesystem.path_prefix(location, true)
+	var prev: String = Filesystem.path_prefix(location, true)
 	navigate(prefix + "://" + location.replace(prev, ""))

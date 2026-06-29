@@ -13,8 +13,8 @@ func size_changed():
 			window.set_tweened("size", get_optimal_size())
 
 func get_optimal_size() -> Vector2:
-	var image_size = picture.texture.get_size()
-	var ratio = image_size.x / image_size.y
+	var image_size: Vector2 = picture.texture.get_size()
+	var ratio: float = image_size.x / image_size.y
 	if size.x > size.y:
 		return round(Vector2(size.y*ratio, window.size.y))
 	else:

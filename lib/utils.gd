@@ -2,8 +2,8 @@ extends Node
 class_name Utils
 
 static func format_bytes(bytes: float) -> String:
-	var units = ["bytes", "KB", "MB", "GB", "TB"]
-	var unit_index = 0
+	var units: Array[Variant] = ["bytes", "KB", "MB", "GB", "TB"]
+	var unit_index: int = 0
 	
 	while bytes >= 1000 and unit_index < units.size() - 1:
 		bytes /= 1000.0
@@ -12,5 +12,5 @@ static func format_bytes(bytes: float) -> String:
 	return str(int(snapped(bytes, 0.01))) + " " + units[unit_index]
 
 static func regex(string: String, pattern: String) -> RegExMatch:
-	var ex = RegEx.create_from_string(pattern)
+	var ex: RegEx = RegEx.create_from_string(pattern)
 	return ex.search(string)

@@ -5,6 +5,7 @@
 Minify is a CLI implementation of the minify [library package](https://github.com/tdewolff/minify).
 
 ## Installation
+
 Make sure you have [Go](http://golang.org/) and [Git](http://git-scm.com/) installed.
 
 Run the following command
@@ -25,29 +26,37 @@ If you do not have `make`, instead run the following lines to install `minify` a
 Optionally, you can run `go install github.com/tdewolff/minify/v2/cmd/minify@latest` to install the latest version.
 
 ### Arch Linux
+
 Using yay, see [AUR](https://aur.archlinux.org/packages/minify/)
+
 ```
 yay -S minify
 ```
 
 ### FreeBSD
+
 ```
 pkg install minify
 ```
 
 ### Alpine Linux
+
 Enable the [community repo](https://wiki.alpinelinux.org/wiki/Enable_Community_Repository)
+
 ```
 apk add minify
 ```
 
 ### MacOS
+
 Using Homebrew, see [Brew tap](https://github.com/tdewolff/homebrew-tap/)
+
 ```
 brew install tdewolff/tap/minify
 ```
 
 ### Debian / Ubuntu
+
 ```
 sudo apt update
 sudo apt install minify
@@ -56,6 +65,7 @@ sudo apt install minify
 Note: may be outdated
 
 ### Docker
+
 Pull the image:
 
 ```
@@ -130,6 +140,7 @@ which will output
       inputs    Input files or directories, leave blank to use stdin
 
 ### Types
+
 Default extension mapping to mimetype (and thus minifier). Use `--ext` to add more mappings, see below for an example.
 
 	asp          text/asp
@@ -152,22 +163,27 @@ Default extension mapping to mimetype (and thus minifier). Use `--ext` to add mo
 	xml          text/xml
 
 ## Examples
+
 Minify **index.html** to **index-min.html**:
+
 ```sh
 $ minify -o index-min.html index.html
 ```
 
 Minify **index.html** to standard output (leave `-o` blank):
+
 ```sh
 $ minify index.html
 ```
 
 Normally the mimetype is inferred from the extension, to set the mimetype explicitly:
+
 ```sh
 $ minify --type=html -o index-min.tpl index.tpl
 ```
 
 You need to set the type or the mimetype option when using standard input:
+
 ```sh
 $ minify --type=application/javascript < script.js > script-min.js
 
@@ -175,82 +191,113 @@ $ cat script.js | minify --type=js > script-min.js
 ```
 
 ### Directories
+
 You can also give directories as input, and these directories can be minified recursively.
 
 Minify files in the current working directory to **out/...** (excluding subdirectories):
+
 ```sh
 $ minify -o out/ *
 ```
 
 Minify files recursively in **src/...** to **out/src/...**:
+
 ```sh
 $ minify -r -o out/ src
 ```
 
 Minify files recursively in **src/...** to **out/...**:
+
 ```sh
 $ minify -r -o out/ src/
 ```
 
 Minify only javascript files in **src/**:
+
 ```sh
 $ minify -r -o out/ --match=*.js src/
 ```
 
-A trailing slash in the source path will copy all files inside the directory, while omitting the trainling slash will copy the directory as well. Both `src/` and `src/.` are equivalent, however `src/*` uses input expansion from bash and ignores hidden files starting with a dot.
+A trailing slash in the source path will copy all files inside the directory, while omitting the trainling slash will
+copy the directory as well. Both `src/` and `src/.` are equivalent, however `src/*` uses input expansion from bash and
+ignores hidden files starting with a dot.
 
-A trailing slash in the destination path forces writing into a directory. This removes ambiguity when minifying a single file which would otherwise write to a file.
+A trailing slash in the destination path forces writing into a directory. This removes ambiguity when minifying a single
+file which would otherwise write to a file.
 
 #### Map custom extensions
-You can map other extensions to a minifier by using the `--ext` option, which maps a filename extension to a filetype or mimetype, which is associated with a minifier.
+
+You can map other extensions to a minifier by using the `--ext` option, which maps a filename extension to a filetype or
+mimetype, which is associated with a minifier.
 
 ```sh
 $ minify -r -o out/ --ext.scss=text/css --ext.xjs=js src/
 ```
+
 or
+
 ```sh
 $ minify -r -o out/ --ext {scss:text/css xjs:js} src/
 ```
 
 #### Matching and include/exclude patterns
-The patterns for `--match`, `--include`, and `--exclude` can be either a glob or a regular expression. To use the latter, prefix the pattern with `~` (if you want to use a glob starting with `~`, escape the tilde `\~...`). Match only matches the base filename, while include/exclude match the full path. Be aware of bash expansion of glob patterns, which requires you to quote the pattern or escape asterisks.
 
-Match will filters all files by the given pattern, eg. `--match '*.css'` will only minify CSS files. The `--include` and `--exclude` options allow to add or remove certain files or directories and is interpreted in the order given. For example, `minify -rvo out/ --exclude 'src/*/**' --include 'src/foo/**' src/` will minify the directory `src/`, except for `src/*/...` where `*` is not `foo`.
+The patterns for `--match`, `--include`, and `--exclude` can be either a glob or a regular expression. To use the
+latter, prefix the pattern with `~` (if you want to use a glob starting with `~`, escape the tilde `\~...`). Match only
+matches the base filename, while include/exclude match the full path. Be aware of bash expansion of glob patterns, which
+requires you to quote the pattern or escape asterisks.
 
-You may define multiple patterns within one option, such as: `--exclude '**/folder1/**' '**/folder2/**' '**/folder3/**'` Doing this might result in unexpected behaviour when it is followed immediately by the input files, as this would be interpreted as another pattern, and not as inputs. `--exclude dir_to_exclude folder_input` Instead format accordingly: `--exclude dir_to_exclude -- folder_input`.
+Match will filters all files by the given pattern, eg. `--match '*.css'` will only minify CSS files. The `--include` and
+`--exclude` options allow to add or remove certain files or directories and is interpreted in the order given. For
+example, `minify -rvo out/ --exclude 'src/*/**' --include 'src/foo/**' src/` will minify the directory `src/`, except
+for `src/*/...` where `*` is not `foo`.
+
+You may define multiple patterns within one option, such as: `--exclude '**/folder1/**' '**/folder2/**' '**/folder3/**'`
+Doing this might result in unexpected behaviour when it is followed immediately by the input files, as this would be
+interpreted as another pattern, and not as inputs. `--exclude dir_to_exclude folder_input` Instead format accordingly:
+`--exclude dir_to_exclude -- folder_input`.
 
 ### Concatenate
-When multiple inputs are given and the output is either standard output or a single file, it will concatenate the files together if you use the bundle option.
+
+When multiple inputs are given and the output is either standard output or a single file, it will concatenate the files
+together if you use the bundle option.
 
 Concatenate **one.css** and **two.css** into **style.css**:
+
 ```sh
 $ minify -b -o style.css one.css two.css
 ```
 
 Concatenate all files in **styles/** into **style.css**:
+
 ```sh
 $ minify -r -b -o style.css styles
 ```
 
 You can also use `cat` as standard input to concatenate files and use gzip for example:
+
 ```sh
 $ cat one.css two.css three.css | minify --type=css | gzip -9 -c > style.css.gz
 ```
 
 ### Watching
+
 To watch file changes and automatically re-minify you can use the `-w` or `--watch` option.
 
 Minify **style.css** to itself and watch changes:
+
 ```sh
 $ minify -w -o style.css style.css
 ```
 
 Minify and concatenate **one.css** and **two.css** to **style.css** and watch changes:
+
 ```sh
 $ minify -w -o style.css one.css two.css
 ```
 
 Minify files in **src/** and subdirectories to **out/** and watch changes:
+
 ```sh
 $ minify -w -r -o out/ src
 ```

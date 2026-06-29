@@ -13,12 +13,12 @@ func init():
 	send("request_menu", "Create")
 	send("request_menu", "View")
 
-func parse_folder():
+func parse_folder() -> void:
 	error.hide()
 	wallpaper = window.get_node("Content/Wallpaper")
 	if not is_instance_valid(grid): return
-	var prefix = Filesystem.path_prefix(window.location)
-	var abs_location = Filesystem.abs_path(window.location)
+	var prefix: String = Filesystem.path_prefix(window.location)
+	var abs_location: String = Filesystem.abs_path(window.location)
 	if Filesystem.is_file(abs_location):
 		print(abs_location, abs_location.get_file())
 		abs_location = abs_location.replace(abs_location.get_file(), "")
@@ -35,7 +35,7 @@ func parse_folder():
 			await System.dialog("Folder "+abs_location+ " doesn't exist", "Folder View")
 		return
 	#var location_parts = abs_location.split("/", false)
-	var dir = Filesystem.open_folder(abs_location)
+	var dir: DirAccess = Filesystem.open_folder(abs_location)
 	dir.include_hidden = window.config.get_value("VIEW", "ShowDotfiles", false)
 	files = dir.get_files().duplicate()
 	folders = dir.get_directories().duplicate()
@@ -43,28 +43,28 @@ func parse_folder():
 	for i in grid.get_children(): i.queue_free()
 	await get_tree().process_frame
 	while grid.get_child_count() < files.size() + folders.size():
-		var slot = preload("res://toolkit/FileSlot.tscn").instantiate()
+		var slot: Node = preload("res://toolkit/FileSlot.tscn").instantiate()
 		grid.add_child(slot)
 		slot.window = window
 	var i := 0
 	for slot in grid.get_children():
 		slot.set_to("")
 	for folder in folders:
-		var slot = grid.get_child(i)
+		var slot: Node = grid.get_child(i)
 		slot.set_to(folder, abs_location.path_join(folder))
 		i += 1
 	for file in files:
-		var slot = grid.get_child(i)
+		var slot: Node = grid.get_child(i)
 		slot.set_to(file, abs_location.path_join(file))
 		i += 1
 		
 	view_apply()
 
 func view_apply():
-	var abs_location = Filesystem.abs_path(window.location)
+	var abs_location: String = Filesystem.abs_path(window.location)
 	
 	if wallpaper == null: wallpaper.hide()
-	var background_file = ".wallpaper"
+	var background_file: String = ".wallpaper"
 	for i in System.file_extensions["picture"]:
 		var path = abs_location+'/'+background_file+"."+i
 		if FileAccess.file_exists(path):
@@ -88,7 +88,7 @@ func view_apply():
 
 func get_optimal_size():
 	var siz:= Vector2i(350, 250)
-	var number_of_files = folders.size() + files.size()
+	var number_of_files: int = folders.size() + files.size()
 	print("Number of files:", number_of_files)
 	if number_of_files > 2: siz.x += 64
 	if number_of_files > 4: 
@@ -112,9 +112,9 @@ func location_changed(_path: String):
 func create(type: String):
 	match type:
 		"folder":
-			var dir = Filesystem.open_folder(window.location)
+			var dir: DirAccess = Filesystem.open_folder(window.location)
 			dir.make_dir("New Folder")
 		"text_file":
-			var file = Filesystem.open_file(window.location+"/New File.txt", FileAccess.WRITE)
+			var file: FileAccess = Filesystem.open_file(window.location+"/New File.txt", FileAccess.WRITE)
 			file.close()
 	parse_folder()
