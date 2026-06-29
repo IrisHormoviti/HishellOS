@@ -3,13 +3,35 @@
 [ext_resource type="Script" uid="uid://dsrea4s4qouf4" path="res://toolkit/file_slot.gd" id="1_a3bxt"]
 [ext_resource type="Texture2D" uid="uid://dre7siy8ne5xf" path="res://assets/icon.svg" id="1_lhbmk"]
 
-[node name="Slot" type="GridContainer" unique_id=1414198826]
-offset_right = 64.0
-offset_bottom = 91.0
-theme_override_constants/h_separation = 8
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dxbxq"]
+bg_color = Color(1, 1, 1, 0.39215687)
+corner_radius_top_left = 51
+corner_detail = 1
+
+[node name="ItemSlot" type="Button" unique_id=24559749]
+show_behind_parent = true
+offset_right = 67.0
+offset_bottom = 95.0
+mouse_default_cursor_shape = 2
+action_mode = 0
+button_mask = 7
 script = ExtResource("1_a3bxt")
 
-[node name="Icon" type="TextureRect" parent="." unique_id=1961040124]
+[node name="Slot" type="GridContainer" parent="." unique_id=1414198826]
+layout_mode = 0
+offset_right = 69.0
+offset_bottom = 98.0
+theme_override_constants/h_separation = 8
+
+[node name="DynamicIcon" type="AspectRatioContainer" parent="Slot" unique_id=114445185]
+visible = false
+custom_minimum_size = Vector2(64, 64)
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Icon" type="TextureRect" parent="Slot" unique_id=1961040124]
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -18,18 +40,7 @@ texture = ExtResource("1_lhbmk")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Button" type="Button" parent="Icon" unique_id=24559749]
-show_behind_parent = true
-layout_mode = 0
-offset_left = -2.0
-offset_top = -2.0
-offset_right = 66.0
-offset_bottom = 93.0
-mouse_default_cursor_shape = 2
-action_mode = 0
-button_mask = 7
-
-[node name="Label" type="Label" parent="." unique_id=302973781]
+[node name="Label" type="Label" parent="Slot" unique_id=302973781]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
@@ -38,9 +49,27 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
-[node name="Separator" type="VSeparator" parent="." unique_id=4825031]
+[node name="Rename" type="LineEdit" parent="Slot/Label" unique_id=1035722469]
+visible = false
+layout_mode = 0
+offset_right = 163.0
+offset_bottom = 31.0
+alignment = 1
+draw_control_chars = true
+select_all_on_focus = true
+
+[node name="Separator" type="VSeparator" parent="Slot" unique_id=4825031]
 modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[connection signal="pressed" from="Icon/Button" to="." method="_on_button_pressed"]
+[node name="LinkIndicator" type="Panel" parent="." unique_id=169868367]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_left = 15.714013
+offset_top = 15.230179
+offset_right = 31.428024
+offset_bottom = 30.460358
+rotation = -3.1415927
+theme_override_styles/panel = SubResource("StyleBoxFlat_dxbxq")

@@ -1,0 +1,135 @@
+[gd_scene format=3 uid="uid://bbujebmwxslg3"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dxbxq"]
+bg_color = Color(0.8089983, 0.8089983, 0.80899817, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.14767182, 0.14767182, 0.1476717, 1)
+corner_radius_top_left = 64
+corner_radius_top_right = 64
+corner_radius_bottom_right = 64
+corner_radius_bottom_left = 64
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jmbhi"]
+bg_color = Color(1, 0.22745098, 0.2901961, 1)
+corner_radius_top_left = 50
+corner_radius_top_right = 50
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e6moe"]
+bg_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 50
+corner_radius_top_right = 50
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_26tpo"]
+bg_color = Color(0.20871013, 0.20871016, 0.20871004, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[node name="Clock" type="Panel" unique_id=1410907637]
+clip_contents = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1016.0
+offset_bottom = -656.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_dxbxq")
+
+[node name="AspectRatioContainer" type="VBoxContainer" parent="." unique_id=1899733255]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.46600002
+anchor_top = 0.367
+anchor_right = 0.53300005
+anchor_bottom = 0.61700004
+offset_left = -0.34802246
+offset_top = -0.24002075
+offset_right = 0.42596436
+offset_bottom = -0.24002075
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="HourText" type="Label" parent="AspectRatioContainer" unique_id=1147209066]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.599199, 0.599199, 0.5991988, 1)
+theme_override_font_sizes/font_size = 18
+text = "12"
+horizontal_alignment = 1
+
+[node name="MinuteText" type="Label" parent="AspectRatioContainer" unique_id=1784323353]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.599199, 0.599199, 0.5991988, 1)
+theme_override_font_sizes/font_size = 18
+text = "30"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MinuteHand" type="Panel" parent="." unique_id=1385634306]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.50100005
+anchor_top = 0.032
+anchor_right = 0.50100005
+anchor_bottom = 0.503
+offset_left = -2.064003
+offset_top = -0.048000097
+offset_right = 1.935997
+offset_bottom = -0.16800308
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset_ratio = Vector2(0.5, 1)
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_jmbhi")
+
+[node name="HourHand" type="Panel" parent="." unique_id=787699432]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.24400002
+anchor_right = 0.5
+anchor_bottom = 0.50100005
+offset_left = -2.0
+offset_top = -1.6160011
+offset_right = 2.0
+offset_bottom = -0.65602493
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset_ratio = Vector2(0.5, 1)
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_e6moe")
+
+[node name="Panel" type="Panel" parent="." unique_id=228574476]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -4.0
+offset_top = -4.0
+offset_right = 4.0
+offset_bottom = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_26tpo")
+
+[node name="Timer" type="Timer" parent="." unique_id=871805074]
+process_callback = 0
+wait_time = 60.0
+autostart = true

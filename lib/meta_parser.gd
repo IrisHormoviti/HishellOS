@@ -30,7 +30,7 @@ static func set_folder_meta(path: String, data: String, section: String, value: 
 static func get_cutsom_icon(path: String) -> String:
 	var dir := Filesystem.open_folder(path)
 	if dir == null: return ""
-	var icon_name := ".icon"
+	var icon_name: String = get_folder_meta(path, "Icon", "ICON", ".icon")
 	for i in System.file_extensions["picture"]:
 		if dir.file_exists(icon_name+"."+i):
 			return path+"/"+icon_name+"."+i

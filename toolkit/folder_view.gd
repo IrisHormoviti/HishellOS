@@ -60,6 +60,12 @@ func parse_folder() -> void:
 		
 	view_apply()
 
+func get_slot(location: String) -> FileSlot:
+	for slot: FileSlot in grid.get_children():
+		if slot.filename == location or window.location.path_join(slot.filename) == location:
+			return slot
+	return null
+
 func view_apply():
 	var abs_location: String = Filesystem.abs_path(window.location)
 	

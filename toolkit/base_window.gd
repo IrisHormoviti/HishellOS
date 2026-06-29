@@ -6,6 +6,7 @@ class_name BaseWindow
 		location = Filesystem.rel_path(val)
 		if active:
 			if has_node("%PathBar"): %PathBar.show_path(location)
+			title = Meta.folder_title(location)
 			send("location_changed", val)
 enum {STATE_WINDOWED, STATE_DRAG, STATE_MAXIMIZED, STATE_LOADING, STATE_RESIZE}
 var state:= STATE_LOADING
@@ -44,6 +45,7 @@ func _ready() -> void:
 	modulate = Color.TRANSPARENT
 	content.hide()
 	splash.show()
+	get_viewport().size_changed.connect(update_layout)
 	
 	if origin == Vector2.ZERO:
 		origin = (Vector2(get_window().size) / get_window().content_scale_factor) / 2
@@ -73,20 +75,31 @@ func _ready() -> void:
 	state = STATE_LOADING
 	send("open")
 
-func send(message: String, value: Variant = null, target: String = ""):
+func send(message: String, value: Variant = null, target: String = "") -> Array:
+	var return_values: Array = []
+	
 	if has_method(message):
-		if value != null: await call(message, value)
-		else: await call(message)
+		if value != null: 
+			return_values.append(await call(message, value))
+		else: return_values.append(await call(message))
+	
 	if not target.is_empty() and components.has(target): 
-		if value != null: await components.get(target).call(message, value)
-		else: await components.get(target).call(message)
+		if value != null: 
+			return_values.append(await components.get(target).call(message, value))
+		else: 
+			return_values.append(await components.get(target).call(message))
 	else:
 		for i: String in components.keys():
 			var component = components.get(i)
 			if not is_instance_valid(component) or component == null: continue
+			
 			if component.has_method(message):
-				if value != null: await component.call(message, value)
-				else: await component.call(message)
+				if value != null: 
+					return_values.append(await component.call(message, value))
+				else: 
+					return_values.append(await component.call(message))
+	
+	return return_values
 
 func handle_dragndrop():
 	var parent_pos := Vector2.ZERO
@@ -101,9 +114,9 @@ func handle_dragndrop():
 		if frame_count - checkpoint > 30:
 			var action_text := "Open"
 			target = check_dragndrop(position)
-			if target == System.root_window():
-				action = "open"
-			elif Filesystem.is_folder(target.location):
+			#if target == System.root_window():
+				#action = "open"
+			if Filesystem.is_folder(target.location):
 				action_text = "Move into %s"%[target.title]
 				action = "move"
 			else:
@@ -177,33 +190,52 @@ func create_content(type := Filesystem.get_file_type(location)) -> void:
 	for container in config.get_section_keys("LAYOUT"):
 		var container_node: Node = get_node_or_null("%"+container)
 		if container_node != null:
-			var hbox: BoxContainer = container_node.get_child(0)
+			var hbox: Container = container_node.get_child(0)
 			for i in hbox.get_children():
 				i.queue_free()
 			var values: Array = config.get_value("LAYOUT", container)
 			for value: String in values:
-				if not value.ends_with(".tscn"): value += ".tscn"
-				var component: Control
-				if value.begins_with("./"):
-					var path: String = Filesystem.abs_path(value.replace("./", location))
-					if Filesystem.exists(path):
-						var packed := ResourceLoader.load(path, "PackedScene", ResourceLoader.CACHE_MODE_IGNORE) as PackedScene
-						component = packed.instantiate()
-						var script_path: String = path.replace(".tscn", ".gd")
-						if Filesystem.is_file(script_path):
-							var script: Script = ResourceLoader.load(script_path, "Script", ResourceLoader.CACHE_MODE_IGNORE)
-							var error: int = script.reload()
-							if error == Error.OK:
-								component.set_script(script)
-							else: System.dialog(error_string(error))
-					else: System.dialog("Non existant component specified: "+ path, "Error")
-				else:
-					if ResourceLoader.exists("res://"+value):
-						component = (load("res://"+value) as PackedScene).instantiate()
-				if component == null:
-					System.dialog("Non existant component specified: "+ value, "Error")
-				else: hbox.add_child(component)
+				create_component(value, hbox)
 
+func create_component(address: String, parent_node: Node, base_path: String = location):
+	if not address.ends_with(".tscn"): address += ".tscn"
+	var component: Control
+	if address.begins_with("./"):
+		if not base_path.ends_with("/"): base_path += '/'
+		var path: String = Filesystem.abs_path(address.replace("./", base_path))
+		if Filesystem.exists(path):
+			var packed := ResourceLoader.load(path, "PackedScene", ResourceLoader.CACHE_MODE_IGNORE) as PackedScene
+			component = packed.instantiate()
+			var script_path: String = path.replace(".tscn", ".gd")
+			if FileAccess.file_exists(script_path):
+				var script: Script = ResourceLoader.load(script_path, "Script", ResourceLoader.CACHE_MODE_IGNORE)
+				var error: int = 0
+				if not script.get_instance_id():
+					error = script.reload()
+				
+				if error == Error.OK:
+					component.set_script(script)
+				elif error == Error.ERR_ALREADY_IN_USE:
+					var window_in_use: BaseWindow = System.windows[System.windows.find_custom(
+						func(window: BaseWindow): return location == window.location
+					)]
+					
+					if window_in_use != null: 
+						window_in_use.focus_window(true)
+						close()
+						return
+				else: System.dialog(error_string(error))
+		else: 
+			System.dialog("Non existant relative component: "+ path, "Component Loading")
+			return
+	else:
+		if ResourceLoader.exists("res://"+address):
+			component = (load("res://"+address) as PackedScene).instantiate()
+	
+	if component == null:
+		System.dialog("Non existant component specified: "+ address, "Component Loading")
+	else: 
+		parent_node.add_child(component)
 
 func setup_window():
 	name = title
@@ -308,7 +340,8 @@ func check_dragndrop(pos := position) -> BaseWindow:
 
 func update_layout():
 	if state == STATE_MAXIMIZED:
-		resize(viewport.get_visible_rect().size, Vector2i(0,0))
+		if size != viewport.get_visible_rect().size:
+			resize(viewport.get_visible_rect().size, Vector2i(0,0))
 		use_windows = true
 		draggable = false
 		#background.hide()
@@ -322,6 +355,7 @@ func update_layout():
 		position.y = max(position.y, 48)
 	#decorations.show()
 	
+	link_components()
 	send("update")
 
 
@@ -398,11 +432,34 @@ func close() -> void:
 	await send("save")
 	cleanup_components()
 	set_tweened("modulate", Color.TRANSPARENT)
-	await resize(Vector2(200,200), origin)
+	await resize(Vector2(200,200), get_origin_position())
 	System.windows.erase(self)
 	if is_root_window():
 		get_tree().quit()
 	queue_free()
+
+func get_origin_slot() -> FileSlot:
+	var candidates: Dictionary[String, FileSlot]
+	
+	for win in System.windows:
+		if win == self: continue
+		for comp in win.components.values():
+			if is_instance_valid(comp) and comp is FileSlot:
+				var path = comp.get_item_location()
+				if comp.get_item_location() in location:
+					candidates.set(path, comp)
+	
+	var key := Filesystem.find_closest_parent(location, candidates.keys())
+	print(key)
+	if candidates.has(key):
+		return candidates.get(key)
+	else: return null
+
+func get_origin_position() -> Vector2:
+	var slot := get_origin_slot()
+	if slot == null: return center_position()
+	else:
+		return slot.global_position
 
 func _exit_tree() -> void:
 	System.windows.erase(self)
@@ -438,13 +495,17 @@ func _on_content_gui_input(event: InputEvent) -> void:
 		elif Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) and state == STATE_WINDOWED:
 			state = STATE_RESIZE
 
-func focus_window():
+func focus_window(bump := false):
 	System.focused_window = self
 	move_to_front()
 	System.windows.erase(self)
 	System.windows.push_front(self)
 	if parent != null:
 		parent.move_child(self, -1)
+	
+	if bump:
+		scale = Vector2(1.1, 1.1)
+		set_tweened("scale", Vector2.ONE)
 
 func add_prefix(prefix: String) -> void:
 	var prev: String = Filesystem.path_prefix(location, true)

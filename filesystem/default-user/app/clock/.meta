@@ -1,0 +1,8 @@
+[DISPLAY]
+Title="Clock"
+
+[LAYOUT]
+Middle=["./clock"]
+
+[ICON]
+DynamicIcon = "./clock"

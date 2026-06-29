@@ -12,19 +12,16 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
 theme_override_styles/focus = SubResource("StyleBoxEmpty_f3md2")
 follow_focus = true
 draw_focus_border = true
 script = ExtResource("1_f3gkb")
 
-[node name="Grid" type="FlowContainer" parent="." unique_id=490585232]
+[node name="Grid" type="FlowContainer" parent="." unique_id=1622529945]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-last_wrap_alignment = 1
 script = ExtResource("1_qprf8")
 
 [node name="Error" type="Label" parent="." unique_id=2091076214]

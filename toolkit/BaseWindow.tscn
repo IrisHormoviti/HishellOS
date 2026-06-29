@@ -36,6 +36,8 @@ content_margin_right = 12.0
 content_margin_bottom = 12.0
 bg_color = Color(0, 0, 0, 0.5176471)
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_g45aw"]
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_682iv"]
 
 [node name="Window" type="Control" unique_id=496038198]
@@ -95,24 +97,34 @@ stretch_mode = 6
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_constants/separation = 0
 
-[node name="Top" type="PanelContainer" parent="Content/Container" unique_id=1508801765]
+[node name="Header" type="PanelContainer" parent="Content/Container" unique_id=1508801765]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBoxFlat_ukgrn")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Content/Container/Top" unique_id=1982816817]
+[node name="HBoxContainer" type="HBoxContainer" parent="Content/Container/Header" unique_id=1982816817]
 layout_mode = 2
 
-[node name="PathBar" parent="Content/Container/Top/HBoxContainer" unique_id=2048467433 instance=ExtResource("5_g45aw")]
+[node name="PathBar" parent="Content/Container/Header/HBoxContainer" unique_id=2048467433 instance=ExtResource("5_g45aw")]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="MenuBar" parent="Content/Container/Top/HBoxContainer" unique_id=1417759323 instance=ExtResource("6_8y856")]
+[node name="MenuBar" parent="Content/Container/Header/HBoxContainer" unique_id=1417759323 instance=ExtResource("6_8y856")]
 layout_mode = 2
 
-[node name="Close" parent="Content/Container/Top/HBoxContainer" unique_id=1011518309 instance=ExtResource("7_4itee")]
+[node name="Close" parent="Content/Container/Header/HBoxContainer" unique_id=1011518309 instance=ExtResource("7_4itee")]
+layout_mode = 2
+
+[node name="Top" type="PanelContainer" parent="Content/Container" unique_id=572975079]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxEmpty_g45aw")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Content/Container/Top" unique_id=2137505702]
 layout_mode = 2
 
 [node name="Middle" type="PanelContainer" parent="Content/Container" unique_id=568041948]
@@ -122,9 +134,12 @@ size_flags_vertical = 3
 mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBoxEmpty_682iv")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Content/Container/Middle" unique_id=2071519679]
+[node name="HBoxContainer" type="MarginContainer" parent="Content/Container/Middle" unique_id=127572776]
 layout_mode = 2
-theme_override_constants/separation = 0
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
 
 [node name="Bottom" type="PanelContainer" parent="Content/Container" unique_id=1543853928]
 unique_name_in_owner = true

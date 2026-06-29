@@ -2,7 +2,7 @@ extends PopupMenu
 
 enum {
 	OPEN,
-	COPY, CUT, DUPLICATE, LINK,
+	COPY, CUT, DUPLICATE, LINK, RENAME,
 	TRASH
 }
 
@@ -24,6 +24,7 @@ func draw_menu(for_location: String) -> void:
 	add_item("Cut", CUT, (KEY_MASK_CMD_OR_CTRL | KEY_X) as Key)
 	add_item("Duplicate", DUPLICATE, (KEY_MASK_CMD_OR_CTRL | KEY_D) as Key)
 	add_item("Create Link", LINK, (KEY_MASK_CMD_OR_CTRL | KEY_L) as Key)
+	add_item("Rename", RENAME, (KEY_F2) as Key)
 	# Move To
 	add_separator("Move To")
 	add_item("Trash", TRASH, (KEY_DELETE) as Key)
@@ -43,10 +44,17 @@ func _on_id_pressed(id: int) -> void:
 			Filesystem.link(location, "~/clipboard")
 		CUT:
 			Filesystem.move(location, "~/clipboard")
+			window.send("parse_folder")
 		DUPLICATE:
 			Filesystem.copy(location, Filesystem.parent_folder(location), false, Filesystem.just_the_name(location) + "-copy")
+			window.send("parse_folder")
 		LINK:
 			Filesystem.link(location, Filesystem.parent_folder(location))
+			window.send("parse_folder")
+		RENAME:
+			var slot: FileSlot = (await window.send("get_slot", location))[0]
+			if slot != null:
+				slot.rename()
 		TRASH:
 			Filesystem.trash(location)
-	System.refresh_all()
+			window.send("parse_folder")

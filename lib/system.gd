@@ -5,8 +5,11 @@ var root: String = OS.get_user_data_dir()+"/filesystem"
 var root_name:= "hishell-root"
 var file_extensions: Dictionary[StringName, PackedStringArray] = {
 	"picture": ["png", "jpg", "jpeg", "svg", "avif", "webp"],
-	"text": ["txt", "md", "cfg", "html", "log", "sh", "ini", "csv", "tres", "tscn", "meta", "gd"]
+	"text": ["txt", "md", "cfg", "html", "log", "sh", "ini", "csv", "tres", "tscn", "meta", "gd"],
+	"godot_scene": ["tscn"],
 }
+const DEFAULT_FILE = "text"
+const DEFAULT_DIR = "folder"
 
 var focused_window: BaseWindow = null
 var windows: Array[BaseWindow]
@@ -16,9 +19,7 @@ func launch(path: String, position: Vector2 = Vector2.ZERO, parent: Node = root_
 	if type == "invalid":
 		System.dialog("Cannot open %s, no such file or directory."%[path], "Error")
 		return
-	if type == "unknown":
-		System.dialog("Cannot open %s, the file type is unknown."%[path], "Error")
-		return
+	
 	var window := (preload("uid://0fthgyrf0xj8") as PackedScene).instantiate()
 	window.location = path
 	window.origin = position

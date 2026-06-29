@@ -28,8 +28,9 @@ static func get_file_type(location: String) -> String:
 			return "unknown"
 		for i in System.file_extensions:
 			if extension in System.file_extensions[i]:
-				return i
-		return "unknown"
+				return i 
+		
+		return System.DEFAULT_FILE
 	return "invalid"
 
 static func link(location: String, to: String, new_name = just_the_name(location)) -> void:
@@ -130,6 +131,26 @@ static func delete(location: String):
 		delete_folder(location)
 	else:
 		System.dialog("No such file or directory: "+ location, "Delete")
+
+static func rename(location: String, new_name: String) -> int:
+	location = abs_path(location)
+	
+	if not exists(location):
+		System.dialog("Failed to rename. No such file or directory:"+ location, "Rename")
+		return ERR_DOES_NOT_EXIST
+	
+	if location.ends_with("/"):
+		location = location.left(-1)
+
+	var base_dir := location.get_base_dir()
+
+	var new_path := base_dir.path_join(new_name)
+	var err := DirAccess.rename_absolute(location, new_path)
+	
+	if err != OK:
+		System.dialog("Failed to rename. "+ error_string(err), "Rename")
+		
+	return err
 
 static func trash(location: String):
 	var to := abs_path("~/trash")
@@ -234,6 +255,15 @@ static func is_folder(path: String) -> bool:
 		path = abs_path(path, false)
 	return DirAccess.dir_exists_absolute(path)
 
+static func is_link(path: String) -> bool:
+	path = abs_path(path)
+	var dir: DirAccess
+	if is_file(path):
+		dir = open_folder(parent_folder(path))
+	else:
+		dir = open_folder(path)
+	return dir.is_link(path)
+
 static func open_folder(path: String) -> DirAccess:
 	if not path.begins_with("/"):
 		path = abs_path(path)
@@ -250,3 +280,23 @@ static func just_the_name(location: String) -> String:
 static func parent_folder(location: String) -> String:
 	var prt := abs_path(location.rstrip("/").get_base_dir())
 	return rel_path(prt)
+
+
+## Finds the closest parent path from an array of candidate paths.
+## Returns an empty string if no parent is found.
+static func find_closest_parent(target_path: String, candidate_paths: Array[String]) -> String:
+	var target_dir := target_path if target_path.ends_with("/") else target_path + "/"
+	
+	var closest_parent := ""
+	
+	for path in candidate_paths:
+		# Normalize candidate path
+		var candidate_dir := path if path.ends_with("/") else path + "/"
+		
+		# If the target starts with this candidate, it's a parent folder
+		if target_dir.begins_with(candidate_dir):
+			# We want the longest matching path (deepest in the tree)
+			if candidate_dir.length() > closest_parent.length():
+				closest_parent = path
+				
+	return closest_parent

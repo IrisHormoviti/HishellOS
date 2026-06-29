@@ -8,6 +8,7 @@
 [node name="PanelContainer" type="PanelContainer" unique_id=1478915918 node_paths=PackedStringArray("dropdown", "button")]
 offset_right = 53.0
 offset_bottom = 39.0
+mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBoxEmpty_ewigs")
 script = ExtResource("1_uwldv")
 dropdown = NodePath("ViewMenu/Dropdown")
